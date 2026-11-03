@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caderno gerado na hora</title>
+<meta name="description" content="Doze questões sorteadas na hora, uma de cada assunto de banca, com números diferentes a cada caderno e resolução escrita em todas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/estilo.css?v=3">
+<link rel="icon" href="assets/marca.svg" type="image/svg+xml">
+</head>
+<body class="p-exercicios">
+<header class="top"><div class="wrap bar">
+  <a class="nome" href="index.html"><img class="marca" src="assets/marca.svg" alt="" width="38" height="38"><i>Haroldo Costa Silva Filho<span>Matemática</span></i></a>
+  <nav>
+    <a href="index.html">Início</a>
+    <a href="livros.html">Livros</a>
+    <a href="estudar.html" aria-current="page">Estudar</a>
+    <a href="laboratorio.html">Laboratório</a>
+    <a href="pesquisa.html">Pesquisa</a>
+    <a href="cursos.html">Cursos e mentoria</a>
+  </nav>
+</div></header>
+<div class="hero"><div class="wrap">
+  <p class="eyebrow">Caderno novo a cada vez</p>
+  <h1>Caderno gerado na hora</h1>
+  <p class="lead">Cada caderno é sorteado na hora: doze moldes com números novos, mais um punhado de questões tiradas do banco dos simulados. A resolução sai junto, escrita com os seus números, e no fim você vê o acerto por assunto.</p>
+</div></div>
+<main><div class="wrap">
+<form id="entrada" class="chamada" style="text-align:left;max-width:560px;margin:0 auto 26px">
+  <h3>Antes de começar</h3>
+  <p style="margin-inline:0;max-width:none">Guardo o seu e-mail para registrar o resultado do caderno e poder te mandar a correção comentada e os próximos materiais. Nada além disso, e você pode pedir a remoção a qualquer momento por <a href="mailto:haroldosfilho@gmail.com">haroldosfilho@gmail.com</a>.</p>
+  <p style="margin-inline:0;max-width:none">
+    <label class="rot" for="nome">Nome (opcional)</label>
+    <input class="campo" type="text" id="nome" name="nome" autocomplete="name" placeholder="Como quer ser chamado">
+  </p>
+  <p style="margin-inline:0;max-width:none">
+    <label class="rot" for="email">E-mail</label>
+    <input class="campo" type="email" id="email" name="email" required autocomplete="email" placeholder="voce@exemplo.com">
+  </p>
+  <p style="margin-inline:0;max-width:none">
+    <label class="aceite"><input type="checkbox" id="aceite" required> Concordo em receber a correção e os materiais neste e-mail.</label>
+  </p>
+  <div class="acoes"><button class="btn cheio" type="submit">Gerar o meu caderno</button></div>
+</form>
+
+<div id="area-quiz" hidden>
+<p class="meta mono" id="cab-caderno"></p>
+<p class="barra" id="placar">Respondidas <b>0</b> de 0 &middot; acertos <b>0</b></p>
+<div class="quiz" id="quiz"></div>
+<div class="chamada" id="fim" hidden></div>
+</div>
+<p class="nota">Os moldes saem das questões que já uso nos simulados: cada um fixa a ideia e sorteia os números, de modo que a conta muda mas o raciocínio é o mesmo. As 380 questões do banco entram no sorteio junto com eles. Conferi a resposta de 1440 cadernos gerados antes de publicar.</p>
+</div></main><script src="assets/treino.js?v=2"></script>
+<script src="assets/sementes.js?v=1"></script>
+<script src="assets/gerador-ui.js?v=1"></script>
+<footer><div class="wrap pe">
+  <div class="pe-id"><img src="assets/marca.svg" alt="" width="42" height="42">
+    <div><b>Prof. Haroldo Costa Silva Filho</b>
+    <span>Mestre em Matemática pela PUC-Rio · ORCID 0009-0002-4473-8974</span><span class="visitas" id="visitas" hidden><b>0</b> visitas</span></div></div>
+  <div class="pe-links">
+    <a href="livros.html">Livros</a><a href="estudar.html">Estudar</a><a href="laboratorio.html">Laboratório</a><a href="cursos.html">Cursos e mentoria</a><a href="https://www.amazon.com.br/stores/author/B0H99K15ZJ">Amazon</a></div>
+</div></footer>
+<script src="assets/contador.js?v=4"></script>
+</body></html>
