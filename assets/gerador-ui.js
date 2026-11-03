@@ -6,10 +6,9 @@
 
   var LETRAS = ["A","B","C","D","E"];
   function bonito(h){
-    // "5\u20442" vira fra\u00e7\u00e3o empilhada; n\u00e3o mexe no que j\u00e1 vem marcado
     if(h.indexOf('class="frac"') >= 0) return h;
-    return h.replace(/(\d+|[a-z])\u2044(\d+|[a-z])/g, function(_, a, b){
-      return '<span class="frac"><span>' + a + '</span><span>' + b + '</span></span>';
+    return h.replace(/((?:&radic;|\u221a)?\s*(?:\d+|[a-z]))\u2044(\d+|[a-z])/g, function(_, a, b){
+      return '<span class="frac"><span>' + a.trim() + '</span><span>' + b + '</span></span>';
     });
   }
   var form = document.getElementById("entrada");

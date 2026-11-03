@@ -2,10 +2,9 @@
   "use strict";
   var LETRAS = ["A","B","C","D","E"];
   function bonito(h){
-    // "5\u20442" vira fra\u00e7\u00e3o empilhada; n\u00e3o mexe no que j\u00e1 vem marcado
     if(h.indexOf('class="frac"') >= 0) return h;
-    return h.replace(/(\d+|[a-z])\u2044(\d+|[a-z])/g, function(_, a, b){
-      return '<span class="frac"><span>' + a + '</span><span>' + b + '</span></span>';
+    return h.replace(/((?:&radic;|\u221a)?\s*(?:\d+|[a-z]))\u2044(\d+|[a-z])/g, function(_, a, b){
+      return '<span class="frac"><span>' + a.trim() + '</span><span>' + b + '</span></span>';
     });
   }
   var alvo = document.getElementById("quiz");
@@ -22,6 +21,13 @@
 
   function monta(){
     var Q = B[atual].q;
+    var baixa = document.getElementById("baixa");
+    if(baixa){
+      if(B[atual].pdf){
+        baixa.innerHTML = '<a class="btn" href="' + B[atual].pdf + '" download>Baixar esta lista em PDF ('
+                        + Math.min(20, Q.length) + ' questões, com gabarito e resoluções)</a>';
+      } else { baixa.innerHTML = ""; }
+    }
     total = Q.length; respondidas = 0; acertos = 0; atualiza();
     alvo.innerHTML = "";
     Q.forEach(function(q, i){
