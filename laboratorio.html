@@ -85,6 +85,38 @@
     chutar como máxima.</p>
   </article>
 
+  <article class="lab" id="anim-dino">
+    <h3>DINO: o que uma matriz faz com uma figura</h3>
+    <p>O mesmo polígono de 21 vértices sofre primeiro a rotação
+    <span class="mono">A = [cos α, −sen α ; sen α, cos α]</span> e depois a homotetia
+    <span class="mono">B = kI</span>. O tracejado é o original, o azul é a imagem por A e o cinza
+    é a imagem por B·A.</p>
+    <p>Como det A = 1, o determinante da composta é k², e é ele que diz por quanto a área foi
+    multiplicada. Com k negativo a figura não só encolhe ou cresce: ela vira de cabeça para baixo,
+    porque kI com k &lt; 0 é a simetria central composta com a ampliação.</p>
+    <div class="palco"><canvas></canvas></div>
+    <div class="ctrl">
+      <label>Ângulo α
+        <input type="range" data-alpha min="0" max="360" step="1" value="141">
+      </label>
+      <label>Razão k
+        <input type="range" data-k min="-2.5" max="2.5" step="0.05" value="-2.1">
+      </label>
+      <span class="leitura mono" data-leitura></span>
+    </div>
+    <div class="acoes" style="margin-top:12px">
+      <a class="btn leve" role="button" tabindex="0" data-preset="identidade">Identidade</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="rot90">Rotação de 90°</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="central">Simetria central</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="dobro">Dobro</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="metade">Metade</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="applet">Como no applet</a>
+    </div>
+    <p class="meta" style="margin-top:12px">Versão em canvas da atividade DINO que publiquei no
+    GeoGebra. O mesmo construto em Python, com os dois controles, está no arquivo
+    <span class="mono">dino.py</span>.</p>
+  </article>
+
 <h2 class="sec" id="videos">Vídeos</h2>
 <p>Resoluções comentadas e demonstrações em vídeo.</p>
 <div class="videos">
