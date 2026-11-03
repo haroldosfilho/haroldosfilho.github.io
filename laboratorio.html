@@ -51,18 +51,38 @@
   </article>
 
   <article class="lab" id="anim-cubo">
-    <h3>O cubo girando, com as arestas do fundo tracejadas</h3>
-    <p>As arestas escondidas são calculadas, não chutadas: a cada quadro o programa decide quais
-    faces estão de costas para você, e uma aresta só vira tracejada quando as duas faces vizinhas
-    dela estão de costas. É o mesmo critério que usei para desenhar as figuras do livro de
-    Geometria Espacial.</p>
+    <h3>Seções planas do cubo</h3>
+    <p>Um plano corta o cubo e a seção aparece dos dois jeitos: encaixada no sólido, à esquerda,
+    e em verdadeira grandeza, à direita. Variando a direção do plano e a distância dele ao centro
+    saem triângulos, quadriláteros, pentágonos e hexágonos — e só esses, porque o cubo tem seis
+    faces e cada uma contribui com no máximo um lado.</p>
+    <p>As arestas escondidas continuam calculadas, não chutadas: uma aresta só vira tracejada
+    quando as duas faces vizinhas dela estão de costas. É o critério que usei para desenhar as
+    figuras do livro de Geometria Espacial.</p>
     <div class="palco"><canvas></canvas></div>
     <div class="ctrl">
-      <button class="btn" data-play>Pausar</button>
-      <label>Inclinação
-        <input type="range" data-incl min="0" max="60" step="1" value="22">
+      <button class="btn" data-play>Pausar a rotação</button>
+      <label>Inclinação do plano
+        <input type="range" data-theta min="0" max="90" step="0.5" value="54.7">
       </label>
+      <label>Giro do plano
+        <input type="range" data-phi min="0" max="90" step="0.5" value="45">
+      </label>
+      <label>Distância ao centro
+        <input type="range" data-d min="-1" max="1" step="0.01" value="0">
+      </label>
+      <span class="leitura mono" data-leitura></span>
     </div>
+    <div class="acoes" style="margin-top:12px">
+      <a class="btn leve" role="button" tabindex="0" data-preset="quadrado">Quadrado</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="retangulo">Retângulo de área máxima</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="hexagono">Hexágono regular</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="triangulo">Triângulo equilátero máximo</a>
+      <a class="btn leve" role="button" tabindex="0" data-preset="pentagono">Pentágono</a>
+    </div>
+    <p class="meta" style="margin-top:12px">A seção de maior área é o retângulo pelas duas arestas
+    opostas, com a²√2 — maior que a do hexágono regular, 3a²√3/4, que é a que o aluno costuma
+    chutar como máxima.</p>
   </article>
 
 <h2 class="sec" id="videos">Vídeos</h2>
