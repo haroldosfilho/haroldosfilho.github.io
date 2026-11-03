@@ -166,14 +166,16 @@ h3.grupo{font-family:var(--ff-tit);font-size:16px;font-weight:700;color:var(--mu
 .alt:hover{border-color:var(--ac2)}
 .alt .letra{font-family:var(--ff-tit);font-weight:700;font-size:14px;color:var(--mu);
   min-width:18px}
-.alt[data-estado="certa"]{border-color:#2e7d4f;background:rgba(46,125,79,.09)}
-.alt[data-estado="certa"] .letra{color:#2e7d4f}
-.alt[data-estado="errada"]{border-color:#a33a3a;background:rgba(163,58,58,.09)}
-.alt[data-estado="errada"] .letra{color:#a33a3a}
+.alt[data-estado="certa"]{border-color:var(--ac);border-width:2px;background:var(--wash)}
+.alt[data-estado="certa"] .letra{color:var(--ac)}
+.alt[data-estado="certa"] .letra::after{content:" \2713"}
+.alt[data-estado="errada"]{border-color:var(--ln);background:transparent;opacity:.62}
+.alt[data-estado="errada"] .letra{color:var(--mu)}
+.alt[data-estado="errada"] .letra::after{content:" \00d7"}
 .alt[disabled]{cursor:default}
 .fb{font-family:var(--ff-tit);font-size:14.5px;font-weight:600;margin:0 0 12px}
-.fb.ok{color:#2e7d4f}
-.fb.no{color:#a33a3a}
+.fb.ok{color:var(--ac)}
+.fb.no{color:var(--mu)}
 .sol{border-top:1px solid var(--ln);margin-top:14px;padding-top:14px}
 .sol h4{font-family:var(--ff-tit);font-size:14px;letter-spacing:.08em;text-transform:uppercase;
   color:var(--mu);margin:0 0 8px}
