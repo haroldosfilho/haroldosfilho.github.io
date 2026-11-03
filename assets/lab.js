@@ -364,7 +364,115 @@
   }
 
   /* ============================================================
-     3. GeoGebra: o applet so carrega quando o visitante pede
+     3. DINO: transformacoes lineares no plano
+     ============================================================ */
+  function dinoLinear(raiz) {
+    var cv   = raiz.querySelector("canvas");
+    var sA   = raiz.querySelector("[data-alpha]");
+    var sK   = raiz.querySelector("[data-k]");
+    var lido = raiz.querySelector("[data-leitura]");
+    var presets = raiz.querySelectorAll("[data-preset]");
+
+    var D = [[6,4],[3,1],[1,2],[-1,5],[-2,5],[-3,4],[-4,4],[-5,3],[-5,2],[-2,2],
+             [-5,1],[-4,0],[-2,1],[-1,0],[0,-3],[-1,-4],[1,-4],[2,-3],[1,-2],[3,-1],[5,1.1474]];
+
+    var PRESETS = {
+      identidade: { a: 0,   k: 1,    det: "1" },
+      rot90:      { a: 90,  k: 1,    det: "1" },
+      central:    { a: 0,   k: -1,   det: "1" },
+      dobro:      { a: 0,   k: 2,    det: "4" },
+      metade:     { a: 0,   k: 0.5,  det: "1/4" },
+      applet:     { a: 141.5, k: -2.1, det: "4,41" }
+    };
+
+    function aplica(P, a, k) {
+      var c = Math.cos(a), s = Math.sin(a);
+      return P.map(function (p) {
+        var x = c*p[0] - s*p[1], y = s*p[0] + c*p[1];
+        return [k*x, k*y];
+      });
+    }
+    function contorno(ctx, P, f) {
+      ctx.beginPath();
+      P.forEach(function (p, i) { i ? ctx.lineTo(f(p)[0], f(p)[1]) : ctx.moveTo(f(p)[0], f(p)[1]); });
+      ctx.closePath();
+    }
+    function fmt(x) {
+      var r = Math.round(x * 100) / 100;
+      return (Math.abs(r) < 5e-3 ? 0 : r).toFixed(2).replace(".", ",");
+    }
+
+    function pintar() {
+      var g = ajusta(cv, 1.45), ctx = g.ctx, W = g.W, H = g.H;
+      var preto = cor("--tx"), azul = cor("--ac2"), cinza = cor("--mu"), linha = cor("--ln");
+      ctx.clearRect(0, 0, W, H);
+
+      var a = (+sA.value) * Math.PI / 180, k = +sK.value;
+      var P0 = D, P1 = aplica(D, a, 1), P2 = aplica(D, a, k);
+
+      var r = 7;
+      P2.concat(P1).forEach(function (p) { r = Math.max(r, Math.abs(p[0]), Math.abs(p[1])); });
+      var e = Math.min(W, H) * 0.44 / r, cx = W / 2, cy = H / 2;
+      var f = function (p) { return [cx + p[0]*e, cy - p[1]*e]; };
+
+      /* eixos */
+      ctx.strokeStyle = linha; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+      ctx.stroke();
+
+      /* imagem por B.A: cinza, atras */
+      ctx.save();
+      contorno(ctx, P2, f);
+      ctx.fillStyle = cinza; ctx.globalAlpha = .18; ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = cinza; ctx.lineWidth = 1.9; ctx.stroke();
+      ctx.restore();
+
+      /* imagem por A: azul */
+      ctx.save();
+      contorno(ctx, P1, f);
+      ctx.fillStyle = azul; ctx.globalAlpha = .24; ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = azul; ctx.lineWidth = 1.9; ctx.stroke();
+      ctx.restore();
+
+      /* original: preto tracejado */
+      ctx.save();
+      ctx.setLineDash([5, 4]); ctx.lineWidth = 1.3; ctx.strokeStyle = preto;
+      contorno(ctx, P0, f); ctx.stroke();
+      ctx.restore();
+
+      var nota = raiz.getAttribute("data-exata");
+      var c = Math.cos(a), s = Math.sin(a);
+      lido.innerHTML =
+        "A = [" + fmt(c) + "  " + fmt(-s) + " ; " + fmt(s) + "  " + fmt(c) + "]"
+        + " · k = " + fmt(k)
+        + " · det(BA) = " + (nota ? nota : fmt(k*k));
+    }
+
+    [sA, sK].forEach(function (c) {
+      c.addEventListener("input", function () {
+        raiz.removeAttribute("data-exata");
+        Array.prototype.forEach.call(presets, function (p) { p.removeAttribute("aria-pressed"); });
+        pintar();
+      });
+    });
+    Array.prototype.forEach.call(presets, function (bt) {
+      bt.addEventListener("click", function () {
+        var p = PRESETS[bt.getAttribute("data-preset")];
+        if (!p) return;
+        sA.value = p.a; sK.value = p.k;
+        raiz.setAttribute("data-exata", p.det);
+        Array.prototype.forEach.call(presets, function (o) { o.removeAttribute("aria-pressed"); });
+        bt.setAttribute("aria-pressed", "true");
+        pintar();
+      });
+    });
+    window.addEventListener("resize", pintar);
+    pintar();
+  }
+
+  /* ============================================================
+     4. GeoGebra: o applet so carrega quando o visitante pede
      ============================================================ */
   function geogebra() {
     var caixas = document.querySelectorAll("[data-ggb]");
@@ -404,6 +512,8 @@
     if (a) circuloTrig(a);
     var c = document.getElementById("anim-cubo");
     if (c) secoesCubo(c);
+    var dn = document.getElementById("anim-dino");
+    if (dn) dinoLinear(dn);
     geogebra();
   });
 })();
