@@ -1,5 +1,12 @@
 (function(){
   var LETRAS = ["A","B","C","D","E"];
+  function bonito(h){
+    // "5\u20442" vira fra\u00e7\u00e3o empilhada; n\u00e3o mexe no que j\u00e1 vem marcado
+    if(h.indexOf('class="frac"') >= 0) return h;
+    return h.replace(/(\d+|[a-z])\u2044(\d+|[a-z])/g, function(_, a, b){
+      return '<span class="frac"><span>' + a + '</span><span>' + b + '</span></span>';
+    });
+  }
   var alvo = document.getElementById("quiz");
   if(!alvo || !window.QUESTOES) return;
   var Q = window.QUESTOES, total = Q.length;
@@ -17,16 +24,20 @@
     Q.forEach(function(q, i){
       var art = document.createElement("article");
       art.className = "q";
+      var textos = q.alts.map(function(a){ return a.replace(/<[^>]+>/g,""); });
+      var curtas = textos.every(function(t){ return t.length <= 14; });
       var alts = q.alts.map(function(a, j){
         return '<li><button class="alt" type="button" data-j="' + j + '">' +
-               '<span class="letra">' + LETRAS[j] + '</span><span>' + a + '</span></button></li>';
+               '<span class="letra">(' + LETRAS[j] + ')</span><span>' + bonito(a) + '</span></button></li>';
       }).join("");
       art.innerHTML =
-        '<p class="num">Questão ' + (i+1) + ' &middot; ' + q.assunto + '</p>' +
-        '<p class="enun">' + q.enun + '</p>' +
-        '<ul class="alts">' + alts + '</ul>' +
+        '<div class="qcab"><span class="qn">' + (i+1) + '&ordf; QUEST\u00c3O</span>' +
+        '<span class="qt">' + (q.assunto || "") + '</span></div>' +
+        '<div class="qcorpo"><p class="enun">' + bonito(q.enun) + '</p>' +
+        '<ul class="alts' + (curtas ? ' curtas' : '') + '">' + alts + '</ul>' +
         '<p class="fb oculto"></p>' +
-        '<div class="sol oculto"><h4>Resolução</h4>' + q.sol + '</div>';
+        (q.sol ? '<div class="sol oculto"><h4>Resolu\u00e7\u00e3o</h4>' + bonito(q.sol) + '</div>' : '') +
+        '</div>';
       alvo.appendChild(art);
 
       var botoes = art.querySelectorAll(".alt");

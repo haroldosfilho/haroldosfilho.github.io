@@ -414,3 +414,29 @@ details.teo[open] > summary::before{content:"–"}
 .aceite input{margin-top:4px;accent-color:var(--ac);flex:none}
 #fim table.tf{max-width:420px}
 #fim h3{font-family:var(--ff-tit);font-size:20px;color:var(--ac);margin:0 0 10px}
+
+/* ===== questões no formato dos cadernos de prova ===== */
+.quiz .q{border:1.4px solid var(--tx);border-radius:0;background:var(--bg);
+  padding:0;margin:0 0 18px;overflow:hidden}
+.qcab{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  border-bottom:1.4px solid var(--tx);padding:7px 14px;background:var(--sf)}
+.qn{font-family:var(--ff-tit);font-weight:700;font-size:14px;letter-spacing:.03em;color:var(--tx)}
+.qt{font-family:var(--ff-tit);font-size:12.5px;color:var(--mu);text-align:right}
+.qcorpo{padding:14px 16px 16px}
+.qcorpo .enun{margin:0 0 13px;text-align:justify;hyphens:auto}
+.quiz .alts{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.quiz .alts.curtas{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px 10px}
+.quiz .alt{width:100%;display:flex;gap:9px;align-items:baseline;text-align:left;
+  font:inherit;font-size:16px;cursor:pointer;background:var(--bg);
+  border:1px solid var(--ln);border-radius:6px;padding:8px 12px}
+.quiz .alt:hover:not(:disabled){border-color:var(--ac2);background:var(--wash)}
+.quiz .alt:disabled{cursor:default}
+.quiz .letra{font-family:var(--ff-tit);font-weight:700;font-size:14px;color:var(--mu);flex:none}
+.quiz .sol{border-top:1px solid var(--ln);margin-top:13px;padding-top:11px}
+.quiz .sol h4{font-family:var(--ff-tit);font-size:12.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--mu);margin:0 0 7px}
+@media(max-width:560px){
+  .quiz .alts.curtas{grid-template-columns:1fr 1fr}
+  .qcorpo{padding:12px 13px 14px}
+  .qt{font-size:11.5px}
+}
