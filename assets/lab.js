@@ -159,88 +159,207 @@
   }
 
   /* ============================================================
-     2. Cubo girando, com as arestas do fundo tracejadas
+     2. Seções planas do cubo
      ============================================================ */
-  function cuboGirando(raiz) {
-    var cv = raiz.querySelector("canvas");
-    var btn = raiz.querySelector("[data-play]");
-    var incl = raiz.querySelector("[data-incl]");
+  function secoesCubo(raiz) {
+    var cv    = raiz.querySelector("canvas");
+    var btn   = raiz.querySelector("[data-play]");
+    var sTh   = raiz.querySelector("[data-theta]");
+    var sPhi  = raiz.querySelector("[data-phi]");
+    var sD    = raiz.querySelector("[data-d]");
+    var lido  = raiz.querySelector("[data-leitura]");
+    var presets = raiz.querySelectorAll("[data-preset]");
 
+    /* cubo de aresta a = 2, centro na origem */
     var V = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],
              [-1,-1, 1],[1,-1, 1],[1,1, 1],[-1,1, 1]];
     var F = [[0,1,2,3],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]];
     var N = [[0,0,-1],[0,0,1],[0,-1,0],[1,0,0],[0,1,0],[-1,0,0]];
+    var A = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 
+    var PRESETS = {
+      quadrado:  { th: 0,      phi: 0,    d: 0,
+                   nome: "quadrado",            area: "a²" },
+      retangulo: { th: 90,     phi: 45,   d: 0,
+                   nome: "retângulo de área máxima", area: "a²√2" },
+      hexagono:  { th: 54.7356, phi: 45,  d: 0,
+                   nome: "hexágono regular",  area: "3a²√3 / 4" },
+      triangulo: { th: 54.7356, phi: 45,  d: 0.57735,
+                   nome: "triângulo equilátero máximo", area: "a²√3 / 2" },
+      pentagono: { th: 24,     phi: 34,   d: -0.40, nome: "pentágono", area: null }
+    };
+
+    var girando = true, ang = 0;
+
+    function normal() {
+      var th = (+sTh.value) * Math.PI / 180, ph = (+sPhi.value) * Math.PI / 180;
+      return [Math.sin(th)*Math.cos(ph), Math.sin(th)*Math.sin(ph), Math.cos(th)];
+    }
+    function pto(k, n, d) {
+      /* d vem normalizado em [-1,1]; o alcance real e a soma dos modulos */
+      return d * (Math.abs(n[0]) + Math.abs(n[1]) + Math.abs(n[2]));
+    }
+    function secao(n, d) {
+      var pts = [], i, P, Q, fp, fq, t;
+      for (i = 0; i < A.length; i++) {
+        P = V[A[i][0]]; Q = V[A[i][1]];
+        fp = n[0]*P[0] + n[1]*P[1] + n[2]*P[2] - d;
+        fq = n[0]*Q[0] + n[1]*Q[1] + n[2]*Q[2] - d;
+        if ((fp > 1e-9 && fq > 1e-9) || (fp < -1e-9 && fq < -1e-9)) continue;
+        if (Math.abs(fp - fq) < 1e-12) continue;
+        t = fp / (fp - fq);
+        if (t < -1e-9 || t > 1 + 1e-9) continue;
+        pts.push([P[0] + t*(Q[0]-P[0]), P[1] + t*(Q[1]-P[1]), P[2] + t*(Q[2]-P[2])]);
+      }
+      /* remove repetidos (vertice tocado por duas arestas) */
+      var u = [];
+      pts.forEach(function (p) {
+        for (var j = 0; j < u.length; j++) {
+          if (Math.abs(u[j][0]-p[0]) < 1e-6 && Math.abs(u[j][1]-p[1]) < 1e-6
+              && Math.abs(u[j][2]-p[2]) < 1e-6) return;
+        }
+        u.push(p);
+      });
+      if (u.length < 3) return { pts: u, plano: [], area: 0 };
+      /* base ortonormal do plano */
+      var e1 = Math.abs(n[0]) < 0.9 ? [1,0,0] : [0,1,0];
+      var ux = [e1[1]*n[2]-e1[2]*n[1], e1[2]*n[0]-e1[0]*n[2], e1[0]*n[1]-e1[1]*n[0]];
+      var mu = Math.hypot(ux[0],ux[1],ux[2]); ux = ux.map(function(v){return v/mu;});
+      var vx = [n[1]*ux[2]-n[2]*ux[1], n[2]*ux[0]-n[0]*ux[2], n[0]*ux[1]-n[1]*ux[0]];
+      var c = [0,0,0];
+      u.forEach(function (p) { c[0]+=p[0]/u.length; c[1]+=p[1]/u.length; c[2]+=p[2]/u.length; });
+      var pl = u.map(function (p) {
+        var w = [p[0]-c[0], p[1]-c[1], p[2]-c[2]];
+        return { x: w[0]*ux[0]+w[1]*ux[1]+w[2]*ux[2],
+                 y: w[0]*vx[0]+w[1]*vx[1]+w[2]*vx[2], p: p };
+      });
+      pl.sort(function (a, b) { return Math.atan2(a.y,a.x) - Math.atan2(b.y,b.x); });
+      var ar = 0;
+      for (var k = 0; k < pl.length; k++) {
+        var q = pl[(k+1) % pl.length];
+        ar += pl[k].x * q.y - q.x * pl[k].y;
+      }
+      return { pts: pl.map(function (o) { return o.p; }), plano: pl, area: Math.abs(ar)/2 };
+    }
+    function nomeia(k) {
+      return ({3:"triângulo",4:"quadrilátero",5:"pentágono",6:"hexágono"})[k]
+             || (k + " lados");
+    }
     function gira(p, a, b) {
       var x = p[0]*Math.cos(a) - p[1]*Math.sin(a);
       var y = p[0]*Math.sin(a) + p[1]*Math.cos(a);
-      var z = p[2];
-      return [x, y*Math.cos(b) - z*Math.sin(b), y*Math.sin(b) + z*Math.cos(b)];
+      return [x, y*Math.cos(b) - p[2]*Math.sin(b), y*Math.sin(b) + p[2]*Math.cos(b)];
     }
 
     function pintar(t) {
-      var g = ajusta(cv, 1.85), ctx = g.ctx, W = g.W, H = g.H;
-      var preto = cor("--tx"), azul = cor("--ac2"), cinza = cor("--mu");
+      if (girando) ang = t * 0.42;
+      var g = ajusta(cv, 2.1), ctx = g.ctx, W = g.W, H = g.H;
+      var preto = cor("--tx"), azul = cor("--ac2"), cinza = cor("--mu"), linha = cor("--ln");
       ctx.clearRect(0, 0, W, H);
 
-      var a = t * 0.55, b = (+incl.value) * Math.PI / 180;
-      var s = Math.min(W * 0.17, H * 0.30), cx = W / 2, cy = H / 2;
+      var b = 22 * Math.PI / 180;
+      var s = Math.min(W * 0.115, H * 0.26), cx = W * 0.34, cy = H / 2;
+      var proj = function (p) { var q = gira(p, ang, b); return [cx + q[0]*s, cy - q[2]*s, q[1]]; };
 
-      var P = V.map(function (p) {
-        var q = gira(p, a, b);
-        return [cx + q[0]*s, cy - q[2]*s, q[1]];
-      });
-      var vis = N.map(function (n) { return gira(n, a, b)[1] < -1e-9; });
+      var n = normal();
+      var d = pto(0, n, +sD.value);
+      var sec = secao(n, d);
 
-      /* faces visiveis, azul bem leve */
-      ctx.fillStyle = azul; ctx.globalAlpha = 0.13;
-      for (var i = 0; i < F.length; i++) {
-        if (!vis[i]) continue;
-        ctx.beginPath();
-        for (var k = 0; k < 4; k++) {
-          var p = P[F[i][k]];
-          if (k === 0) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
-        }
-        ctx.closePath(); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
+      var P = V.map(proj);
+      var vis = N.map(function (m) { return gira(m, ang, b)[1] < -1e-9; });
 
-      /* arestas: por face adjacente */
+      /* arestas escondidas */
       var E = {};
-      for (var f = 0; f < F.length; f++) {
+      F.forEach(function (f, i) {
         for (var j = 0; j < 4; j++) {
-          var u = F[f][j], w = F[f][(j+1)%4];
-          var ch = Math.min(u,w) + "-" + Math.max(u,w);
-          (E[ch] = E[ch] || { a: Math.min(u,w), b: Math.max(u,w), v: false }).v |= vis[f];
+          var u = f[j], w = f[(j+1)%4], ch = Math.min(u,w) + "-" + Math.max(u,w);
+          (E[ch] = E[ch] || { a: Math.min(u,w), b: Math.max(u,w), v: false }).v |= vis[i];
         }
-      }
-      var chaves = Object.keys(E);
-      /* escondidas primeiro */
+      });
       ctx.save();
-      ctx.setLineDash([5, 4]); ctx.lineWidth = 1.1; ctx.strokeStyle = cinza;
+      ctx.setLineDash([5,4]); ctx.lineWidth = 1.1; ctx.strokeStyle = cinza;
       ctx.beginPath();
-      chaves.forEach(function (c) {
+      Object.keys(E).forEach(function (c) {
         if (E[c].v) return;
-        ctx.moveTo(P[E[c].a][0], P[E[c].a][1]);
-        ctx.lineTo(P[E[c].b][0], P[E[c].b][1]);
+        ctx.moveTo(P[E[c].a][0], P[E[c].a][1]); ctx.lineTo(P[E[c].b][0], P[E[c].b][1]);
       });
       ctx.stroke(); ctx.restore();
 
+      /* a secao */
+      if (sec.pts.length >= 3) {
+        var S = sec.pts.map(proj);
+        ctx.beginPath();
+        S.forEach(function (p, i) { i ? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1]); });
+        ctx.closePath();
+        ctx.fillStyle = azul; ctx.globalAlpha = .30; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.strokeStyle = azul; ctx.lineWidth = 2.1; ctx.stroke();
+        ctx.fillStyle = azul;
+        S.forEach(function (p) { ctx.beginPath(); ctx.arc(p[0],p[1],3,0,7); ctx.fill(); });
+      }
+
+      /* arestas visiveis por cima */
       ctx.lineWidth = 1.8; ctx.strokeStyle = preto; ctx.lineCap = "round";
       ctx.beginPath();
-      chaves.forEach(function (c) {
+      Object.keys(E).forEach(function (c) {
         if (!E[c].v) return;
-        ctx.moveTo(P[E[c].a][0], P[E[c].a][1]);
-        ctx.lineTo(P[E[c].b][0], P[E[c].b][1]);
+        ctx.moveTo(P[E[c].a][0], P[E[c].a][1]); ctx.lineTo(P[E[c].b][0], P[E[c].b][1]);
       });
       ctx.stroke();
+
+      /* a secao em verdadeira grandeza, a direita */
+      if (sec.plano.length >= 3) {
+        var ox = W * 0.78, oy = H / 2;
+        var r = 0; sec.plano.forEach(function (q) { r = Math.max(r, Math.hypot(q.x,q.y)); });
+        var e = Math.min(W * 0.17, H * 0.33) / (r || 1);
+        ctx.save();
+        ctx.strokeStyle = linha; ctx.lineWidth = 1; ctx.setLineDash([3,3]);
+        ctx.beginPath(); ctx.arc(ox, oy, Math.min(W*0.19,H*0.37), 0, 7); ctx.stroke();
+        ctx.restore();
+        ctx.beginPath();
+        sec.plano.forEach(function (q, i) {
+          var x = ox + q.x*e, y = oy - q.y*e;
+          i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = azul; ctx.globalAlpha = .18; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.strokeStyle = azul; ctx.lineWidth = 2; ctx.stroke();
+        ctx.font = "600 12px " + getComputedStyle(document.body).fontFamily;
+        ctx.fillStyle = cinza; ctx.textAlign = "center";
+        ctx.fillText("em verdadeira grandeza", ox, oy + Math.min(W*0.19,H*0.37) + 19);
+      }
+
+      var k = sec.pts.length;
+      var nota = raiz.getAttribute("data-exata");
+      lido.textContent = k < 3
+        ? "o plano não corta o cubo"
+        : nomeia(k) + "  ·  " + k + " lados  ·  área = "
+          + (nota ? nota : (sec.area / 4).toFixed(3) + " a²");
     }
 
     var l = laco(pintar);
     btn.addEventListener("click", function () {
-      btn.textContent = l.alterna() ? "Pausar" : "Continuar";
+      girando = l.alterna();
+      btn.textContent = girando ? "Pausar a rotação" : "Girar";
     });
-    incl.addEventListener("input", function () { pintar(l.ler()); });
+    [sTh, sPhi, sD].forEach(function (c) {
+      c.addEventListener("input", function () {
+        raiz.removeAttribute("data-exata");
+        Array.prototype.forEach.call(presets, function (p) { p.removeAttribute("aria-pressed"); });
+        pintar(l.ler());
+      });
+    });
+    Array.prototype.forEach.call(presets, function (bt) {
+      bt.addEventListener("click", function () {
+        var p = PRESETS[bt.getAttribute("data-preset")];
+        if (!p) return;
+        sTh.value = p.th; sPhi.value = p.phi; sD.value = p.d;
+        if (p.area) raiz.setAttribute("data-exata", p.area);
+        else raiz.removeAttribute("data-exata");
+        Array.prototype.forEach.call(presets, function (o) { o.removeAttribute("aria-pressed"); });
+        bt.setAttribute("aria-pressed", "true");
+        pintar(l.ler());
+      });
+    });
     window.addEventListener("resize", function () { pintar(l.ler()); });
   }
 
@@ -284,7 +403,7 @@
     var a = document.getElementById("anim-seno");
     if (a) circuloTrig(a);
     var c = document.getElementById("anim-cubo");
-    if (c) cuboGirando(c);
+    if (c) secoesCubo(c);
     geogebra();
   });
 })();
