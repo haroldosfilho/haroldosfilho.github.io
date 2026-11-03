@@ -1,10 +1,9 @@
 /* Contador de visitas — GoatCounter (sem cookies, sem rastreio pessoal).
-   Para ligar: crie a conta gratuita em https://www.goatcounter.com, escolha o
-   código do site e troque SEUCODIGO abaixo pelo código escolhido. Em
-   Settings → "Allow adding visitor counts to your website", deixe marcado. */
+   Conta: haroldofilho.goatcounter.com. O número só aparece com a opção
+   "allow using the visitor counter" ligada em Settings. */
 (function () {
   "use strict";
-  var CODIGO = "SEUCODIGO";
+  var CODIGO = "haroldofilho";
   if (CODIGO === "SEU" + "CODIGO") return;      // ainda não configurado
   var base = "https://" + CODIGO + ".goatcounter.com";
 
