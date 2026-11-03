@@ -10,7 +10,7 @@
   // 1. registra a visita
   var s = document.createElement("script");
   s.async = true;
-  s.src = base + "/count.js";
+  s.src = "https://gc.zgo.at/count.js";
   s.setAttribute("data-goatcounter", base + "/count");
   document.head.appendChild(s);
 
